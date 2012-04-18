@@ -1,1 +1,31 @@
 very crude implementation for mysql clusters on a vagrant system
+Works for lucid32 vagrantbox.
+
+vagrant up should bring all servers online: 1 management server, 2 data nodes, 2 APIs.
+
+virtual machine IP addresses:
+Management: 44.44.44.4
+
+data node 1: 44.44.44.2
+data node 2: 44.44.44.3
+
+API node 1: 44.44.44.5
+API node 2: 44.44.44.6
+
+Note:
+-Data nodes may get kicked off the server if the load from the 5 VMs are too much (missed heartbeat).
+
+  To check connected nodes, log into the management server
+  cd /usr/local/mysql-cluster
+  bin/ndb_mgm --ndb-connectstring=44.44.44.4:2205
+  show
+
+  To reconnect a data node:
+  sudo /usr/local/mysql-cluster/bin/ndbd --ndb-connectstring=44.44.44.4:2205
+
+-MYSQL API nodes currently may not be accessed from outside local vm. To enable SSH from anywhere:
+log into mysql from API nodes and update root privileges:
+/usr/local/mysql-cluster/bin/mysql -u root
+update mysql.user set host='%' where user='root' and host='localhost';flush privileges;
+
+-This build contains mysql-cluster v 7.2.5. Included in repo so as to avoid slow wget 5 times each up.
